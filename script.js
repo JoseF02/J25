@@ -31,16 +31,29 @@ document.getElementById('contactForm').addEventListener('submit', function(event
         formData.intereses.push(checkbox.value);
     });
     
-    // Aquí normalmente enviarías los datos a un servidor
-    // Para este ejemplo, solo los mostraremos en la consola
-    console.log('Datos del formulario:', formData);
-    
-    // Mostrar mensaje de éxito
-    document.getElementById('mensajeExito').style.display = 'block';
-    
-    // Opcional: Limpiar el formulario después de 3 segundos
-    setTimeout(function() {
-        document.getElementById('contactForm').reset();
-        document.getElementById('mensajeExito').style.display = 'none';
-    }, 3000);
+    fetch('/contact', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(function(response) {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(function() {
+        document.getElementById('mensajeExito').style.display = 'block';
+
+        setTimeout(function() {
+            document.getElementById('contactForm').reset();
+            document.getElementById('mensajeExito').style.display = 'none';
+        }, 3000);
+    })
+    .catch(function(error) {
+        alert('Error al enviar el formulario');
+        console.error(error);
+    });
 });
